@@ -6,6 +6,7 @@ alias fo="fn_fzf_open" # Fuzzy finder with open the selected file in the default
 alias fq="fzf -q" # Fuzzy finder with input query
 alias foq="fn_fzf_open_query" # Fuzzy finder with input query and open the selected file in the default application
 alias fx="fn_fzf_exec" # Fuzzy-find an alias and run it
+alias ff="fn_fzf_finder" # Fuzzy-find a file or folder and reveal it in macOS Finder
 
 
 ##############################
@@ -58,6 +59,7 @@ Find aliases
   fq           fzf with -q (add your query after the alias)
   foq          Pick a file to open; usage: foq <query>
   fx           Fuzzy-pick a shell alias and run it
+  ff           Pick a file or folder and reveal it in macOS Finder
 
 ----------------------------------------
 Common fzf / integration (if fzf.zsh sourced)
@@ -82,6 +84,23 @@ fn_fzf_open_query() {
     return 1
   fi
   fzf -q "$1" | xargs open
+}
+
+
+# Fuzzy-find a file or folder and reveal it in macOS Finder.
+# Files: opens the parent folder with the file selected (open -R).
+# Folders: opens the folder directly.
+fn_fzf_finder() {
+  local selected
+  selected=$(fd --hidden --follow --exclude .git | fzf --prompt='finder> ')
+  [[ -z "$selected" ]] && return
+  if [[ -d "$selected" ]]; then
+    echo "Opening folder: $selected"
+    open "$selected"
+  else
+    echo "Opening folder: $(dirname "$selected")"
+    open -R "$selected"
+  fi
 }
 
 
